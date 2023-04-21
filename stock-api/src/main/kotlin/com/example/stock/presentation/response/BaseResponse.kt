@@ -5,17 +5,17 @@ import org.springframework.http.ResponseEntity
 
 class BaseResponse<T>(
     status: HttpStatus,
-    message: String,
+    code: String,
     data: T? = null
-) : ResponseEntity<BaseResponseBody<T>>(BaseResponseBody(status, message, data), status) {
+) : ResponseEntity<BaseResponseBody<T>>(BaseResponseBody(status.value(), code, data), status) {
 
     companion object {
         fun <T> ok(data: T): BaseResponse<T> {
-            return BaseResponse(HttpStatus.OK, "success", data)
+            return BaseResponse(HttpStatus.OK, "SUCCESS", data)
         }
 
-        fun <T> error(status: HttpStatus, message: String): BaseResponse<T> {
-            return BaseResponse(status, message, null)
+        fun error(status: HttpStatus, code: String, message: String): BaseResponse<String> {
+            return BaseResponse(status, code, message)
         }
     }
 }

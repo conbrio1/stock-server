@@ -1,9 +1,7 @@
 package com.example.stock.presentation.response
 
-import org.springframework.http.HttpStatus
-
 data class BaseResponseBody<T>(
-    val status: HttpStatus,
-    val message: String,
+    val status: Int,
+    val code: String,
     val data: T? = null
 )
