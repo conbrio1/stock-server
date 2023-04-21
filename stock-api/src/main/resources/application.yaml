@@ -1,0 +1,34 @@
+server:
+  port: 8080
+  shutdown: graceful
+
+spring:
+  application:
+    name: stock-server
+
+  profiles:
+    group:
+      test: domain, external-client
+      local: domain, storage, external-client
+    active: local
+
+springdoc:
+  pathsToMatch: /**
+  packagesToScan: com.example.stock
+  swagger-ui:
+    disable-swagger-default-url: true
+    display-request-duration: true
+    operationsSorter: method
+    use-root-path: true
+
+schedule:
+  daily-collect:
+    name: daily_collect
+    cron: 0 0 0/2 * * *
+    lock-least: PT3S
+    lock-most: PT5S
+  today-collect:
+    name: today_collect
+    cron: 0/10 * * * * *
+    lock-least: PT3S
+    lock-most: PT5S

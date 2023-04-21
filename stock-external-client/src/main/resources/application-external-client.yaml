@@ -1,0 +1,4 @@
+finance-api:
+    base-url: https://query1.finance.yahoo.com
+    path: /v8/finance/chart
+    interval: 1d

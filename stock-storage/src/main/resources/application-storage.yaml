@@ -1,0 +1,13 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: stock
+      username: admin
+      password: admin
+      authentication-database: admin
+      auto-index-creation: true
