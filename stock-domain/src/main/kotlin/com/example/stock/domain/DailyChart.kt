@@ -1,5 +1,6 @@
 package com.example.stock.domain
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.CompoundIndex
@@ -12,7 +13,9 @@ import java.time.ZoneId
 @CompoundIndex(name = "idx_symbol_timestamp", def = "{'symbol': 1, 'timestamp': -1}", unique = true)
 class DailyChart private constructor(
     @Id
+    @JsonIgnore
     val id: ObjectId,
+    @JsonIgnore
     val symbol: String,
     var high: Double?,
     var low: Double?,
@@ -40,6 +43,7 @@ class DailyChart private constructor(
         timestamp = timestamp
     )
 
+    @JsonIgnore
     fun getUTCDate(): LocalDate {
         return timestamp.atZone(ZoneId.of("UTC")).toLocalDate()
     }
