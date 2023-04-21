@@ -42,14 +42,13 @@ class DailyChartRepositoryCustomImpl(
     }
 
     override fun upsertTodayChart(todayChart: DailyChart): Mono<DailyChart> {
-        // symbol이 같고, timestamp가 todayChart와 UTC기준 동일한 날짜이며, timestamp가 todayChart보다 같거나 작은 데이터 조회 query
-        // 장마감 이후에는 timestamp가 변하지 않으므로 lte를 사용
+        // symbol이 같고, timestamp가 todayChart와 UTC기준 동일한 날짜인 데이터 조회 query
         val query = Query(
             Criteria.where("symbol").`is`(todayChart.symbol)
                 .andOperator(
                     Criteria.where("timestamp").gte(todayChart.getUTCDate()),
-                    Criteria.where("timestamp").lte(
-                        todayChart.timestamp
+                    Criteria.where("timestamp").lt(
+                        todayChart.getUTCDate().plusDays(1)
                     )
                 )
         )
