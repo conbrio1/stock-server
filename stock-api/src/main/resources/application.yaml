@@ -10,6 +10,7 @@ spring:
     group:
       test: domain, external-client
       local: domain, storage, external-client
+      dev: domain, storage, external-client
     active: local
 
 springdoc:

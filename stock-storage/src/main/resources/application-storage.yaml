@@ -11,3 +11,17 @@ spring:
       password: admin
       authentication-database: admin
       auto-index-creation: true
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  data:
+    mongodb:
+      host: ${MONGODB_HOST}
+      port: ${MONGODB_PORT}
+      database: stock
+      username: ${MONGODB_USERNAME}
+      password: ${MONGODB_PASSWORD}
+      authentication-database: admin
+      auto-index-creation: false

@@ -5,7 +5,7 @@ plugins {
 dependencies {
     // sub modules
     implementation(project(":stock-domain"))
-    implementation(project(":stock-storage"))
+    runtimeOnly(project(":stock-storage"))
     implementation(project(":stock-external-client"))
     // spring webflux
     implementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -43,14 +43,17 @@ jib {
         image = System.getenv("REGISTRY_URL") + "/" + System.getenv("REPOSITORY_NAME")
         tags = mutableSetOf(System.getenv("IMAGE_TAG") ?: "latest")
         auth {
-            username = System.getenv("DOCKERHUB_USERNAME") ?: ""
-            password = System.getenv("DOCKERHUB_PASSWORD") ?: ""
+            username = System.getenv("REGISTRY_USERNAME") ?: ""
+            password = System.getenv("REGISTRY_PASSWORD") ?: ""
         }
     }
     container {
         mainClass = "com.example.stock.StockApiApplicationKt"
         environment = mapOf(
-            "DATABASE_PASSWORD" to System.getenv("DATABASE_PASSWORD")
+            "MONGODB_HOST" to System.getenv("MONGODB_HOST"),
+            "MONGODB_PORT" to System.getenv("MONGODB_PORT"),
+            "MONGODB_USERNAME" to System.getenv("MONGODB_USERNAME"),
+            "MONGODB_PASSWORD" to System.getenv("MONGODB_PASSWORD")
         )
         jvmFlags = mutableListOf(
             "-Dspring.profiles.active=" + System.getenv("PROFILE")
