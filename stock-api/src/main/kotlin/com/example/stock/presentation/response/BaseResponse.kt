@@ -1,21 +1,36 @@
 package com.example.stock.presentation.response
 
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.util.LinkedMultiValueMap
+import org.springframework.util.MultiValueMap
 
 class BaseResponse<T>(
-    status: HttpStatus,
-    code: String,
-    data: T? = null
-) : ResponseEntity<BaseResponseBody<T>>(BaseResponseBody(status.value(), code, data), status) {
+    val status: HttpStatus,
+    val body: BaseResponseBody<T>?,
+    val headers: MultiValueMap<String, String>? = null
+) : ResponseEntity<BaseResponseBody<T>>(body, headers, status) {
 
     companion object {
-        fun <T> ok(data: T): BaseResponse<T> {
-            return BaseResponse(HttpStatus.OK, "SUCCESS", data)
+        private val defaultHeader = LinkedMultiValueMap<String, String>().apply {
+            add("Content-Type", MediaType.APPLICATION_JSON_VALUE)
         }
 
-        fun error(status: HttpStatus, code: String, message: String): BaseResponse<String> {
-            return BaseResponse(status, code, message)
+        fun <T> ok(data: T): BaseResponse<T> {
+            return BaseResponse(
+                status = HttpStatus.OK,
+                body = BaseResponseBody(HttpStatus.OK.value(), HttpStatus.OK.name, data),
+                headers = defaultHeader
+            )
+        }
+
+        fun fail(status: HttpStatus, code: String, message: String?): BaseResponse<String> {
+            return BaseResponse(
+                status = status,
+                body = BaseResponseBody(status.value(), code, message),
+                headers = defaultHeader
+            )
         }
     }
 }

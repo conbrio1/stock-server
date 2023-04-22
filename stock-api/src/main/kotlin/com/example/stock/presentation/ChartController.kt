@@ -1,9 +1,10 @@
 package com.example.stock.presentation
 
 import com.example.stock.application.ChartSearchService
+import com.example.stock.infra.exception.StockExceptionType
+import com.example.stock.infra.exception.StockRuntimeException
 import com.example.stock.presentation.response.BaseResponse
 import com.example.stock.presentation.response.ChartResponse
-import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
@@ -21,18 +22,17 @@ class ChartController(
         @RequestParam("days", defaultValue = "5") days: Int
     ): Mono<BaseResponse<ChartResponse.DailyChartInfo>> {
         if (days != 1 && days != 5) {
-            return Mono.just(BaseResponse.error(HttpStatus.BAD_REQUEST, "days는 1 또는 5만 가능합니다."))
+            return Mono.error(StockRuntimeException(StockExceptionType.INVALID_DAYS))
         }
 
         val symbolMetaDataMono = chartSearchService.getSymbolMetaData(symbol)
 
-        val dailyChartFlux = chartSearchService.getDailyChart(symbol, days)
+        val dailyChartListMono = chartSearchService.getDailyChart(symbol, days)
             .collectList()
 
-        return symbolMetaDataMono.flatMap { symbolMetaData ->
-            dailyChartFlux.map { dailyCharts ->
-                BaseResponse.ok(ChartResponse.DailyChartInfo(symbolMetaData, dailyCharts))
+        return Mono.zip(symbolMetaDataMono, dailyChartListMono)
+            .flatMap {
+                Mono.just(BaseResponse.ok(ChartResponse.DailyChartInfo(it.t1, it.t2)))
             }
-        }
     }
 }
