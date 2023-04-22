@@ -14,10 +14,7 @@ class DailyChartRepositoryCustomImpl(
 ) : DailyChartRepositoryCustom {
 
     override fun upsertBeforeTodayChart(beforeTodayChart: DailyChart): Mono<DailyChart> {
-        // symbol이 같고, timestamp가 beforeTodayChart와 동일한 데이터 조회 query
-        val query = Query()
-            .addCriteria(Criteria.where("symbol").`is`(beforeTodayChart.symbol))
-            .addCriteria(Criteria.where("timestamp").`is`(beforeTodayChart.timestamp))
+        val query = symbolAndDateMatchQuery(beforeTodayChart)
 
         // query에 해당하는 데이터가 없어 insert하는 경우에만 값을 설정하도록 setOnInsert 사용
         val update = Update()
@@ -42,16 +39,7 @@ class DailyChartRepositoryCustomImpl(
     }
 
     override fun upsertTodayChart(todayChart: DailyChart): Mono<DailyChart> {
-        // symbol이 같고, timestamp가 todayChart와 UTC기준 동일한 날짜인 데이터 조회 query
-        val query = Query(
-            Criteria.where("symbol").`is`(todayChart.symbol)
-                .andOperator(
-                    Criteria.where("timestamp").gte(todayChart.getUTCDate()),
-                    Criteria.where("timestamp").lt(
-                        todayChart.getUTCDate().plusDays(1)
-                    )
-                )
-        )
+        val query = symbolAndDateMatchQuery(todayChart)
 
         // update할 필드 설정
         val update = Update()
@@ -73,4 +61,17 @@ class DailyChartRepositoryCustomImpl(
             reactiveMongoTemplate.save(todayChart)
         }
     }
+
+    /**
+     * symbol이 같고, timestamp가 todayChart와 UTC기준 동일한 날짜인 데이터 조회 query 생성
+     */
+    private fun symbolAndDateMatchQuery(beforeTodayChart: DailyChart) = Query(
+        Criteria.where("symbol").`is`(beforeTodayChart.symbol)
+            .andOperator(
+                Criteria.where("timestamp").gte(beforeTodayChart.getUTCDate()),
+                Criteria.where("timestamp").lt(
+                    beforeTodayChart.getUTCDate().plusDays(1)
+                )
+            )
+    )
 }

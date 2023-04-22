@@ -5,17 +5,21 @@ import com.example.stock.infra.exception.StockExceptionType
 import com.example.stock.infra.exception.StockRuntimeException
 import com.example.stock.presentation.response.BaseResponse
 import com.example.stock.presentation.response.ChartResponse
+import com.example.stock.presentation.swagger.GetDailyChartSwaggerMeta
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Mono
 
+@Tag(name = "차트 조회", description = "차트 조회 관련 API")
 @RestController
 class ChartController(
     private val chartSearchService: ChartSearchService
 ) {
 
+    @GetDailyChartSwaggerMeta
     @GetMapping("/daily-chart/{symbol}")
     fun getDailyChart(
         @PathVariable symbol: String,

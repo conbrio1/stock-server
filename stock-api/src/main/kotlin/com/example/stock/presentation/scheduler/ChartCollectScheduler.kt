@@ -5,6 +5,7 @@ import com.example.stock.infra.client.enums.ApiValidRange
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
+import javax.annotation.PostConstruct
 
 @Component
 class ChartCollectScheduler(
@@ -13,6 +14,11 @@ class ChartCollectScheduler(
 
     companion object {
         const val SAMSUNG = "005930.KS"
+    }
+
+    @PostConstruct
+    fun initialJob() {
+        collect5DaysChart()
     }
 
     @Scheduled(cron = "\${schedule.daily-collect.cron}")

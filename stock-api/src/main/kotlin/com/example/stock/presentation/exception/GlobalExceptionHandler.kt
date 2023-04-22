@@ -1,5 +1,6 @@
-package com.example.stock.infra.exception
+package com.example.stock.presentation.exception
 
+import com.example.stock.infra.exception.StockRuntimeException
 import com.example.stock.presentation.response.BaseResponse
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -7,7 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import reactor.core.publisher.Mono
 
-@RestControllerAdvice(basePackages = ["com.example.stock"])
+@RestControllerAdvice
 class GlobalExceptionHandler {
 
     private val logger = LoggerFactory.getLogger(javaClass)
@@ -15,7 +16,6 @@ class GlobalExceptionHandler {
     @ExceptionHandler(StockRuntimeException::class)
     fun handleAppException(ex: StockRuntimeException): Mono<BaseResponse<String>> {
         logger.info(ex.message)
-
 
         return Mono.just(
             BaseResponse.fail(
